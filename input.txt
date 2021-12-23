@@ -1,0 +1,142 @@
+# This file describes a programming task which we'd like you to complete
+# in the language of your choice, then send back to Fauna for evaluation.
+#
+# Problem: Task execution ordering. Imagine a system of related tasks where
+# some tasks depend on others to complete before they can start. Some tasks
+# will have no dependencies and can start right away, and others will need
+# to wait for one or more tasks to complete.
+#
+# These dependency relationships are defined in a text stream with lines
+# starting with a task identifier (1-20 case sensitive roman alphabet
+# characters [a-zA-Z]), followed by a ':', followed by a comma delimited list
+# of dependencies (task identifiers). For example, if T depends on A and B,
+# you'll have the line:
+#
+# T:A,B
+#
+# In the text input stream, any line which starts with '#' should be ignored.
+# Any line  which is empty should be ignored as well. All lines which are not
+# ignored must match the format described above. These lines will appear in
+# groupings in the input stream, and each group will be separated by ignorable
+# lines.
+#
+# This file is valid input, and contains four examples of task groups. See
+# below.
+#
+# Your challenge is to write a program which reads standard input, and for each
+# group of tasks in the input stream, writes a single line to standard output
+# which states the order in which the tasks may be executed. The tasks should
+# be printed with a single space between each task identified. Note that there
+# may be multiple valid answers for each group. See examples below. Please
+# note that there should be no additional output than is described here. We
+# will be testing your code with automated tooling, and additional output
+# will not help us evaluate the correctness of your program's behavior.
+#
+# Handle invalid input gracefully. Invalid input includes both badly formatted
+# text or impossible task dependencies. If your program encounters invalid
+# input, your program should emit no information on standard out, emit a
+# message describing the problem on standard error, and exit with an exit
+# status code of 1.
+#
+# Please produce code which demonstrates your best effort, complete with
+# testing, comments, and so forth.
+#
+# You have 24 hours to send your solution back to Fauna from the time you
+# are given the challenge.
+#
+# Good Luck!!
+
+# EXAMPLE 1
+#   T      Task T depends on A and B
+#  / \
+# A   B    Tasks A and B depend on no other tasks and can start right away.
+
+T:A,B
+A:
+B:
+
+# There are two valid outputs for EXAMPLE 1. One of the following would be
+# written to standard out from your program (without '#' or quotes):
+# "A B T"
+# "B A T"
+
+# EXAMPLE 2
+#    T     Task T depends on A and B individually to complete
+#   / \
+#  A   B   A and B each depend on C to complete first.
+#   \ /
+#    C     C depends on D to complete first.
+#    |
+#    D     D depends on no tasks to complete, and can start right away.
+
+T:A,B
+A:C
+B:C
+C:D
+D:
+
+# One valid output of EXAMPLE 2 (without quotes): "D C A B T"
+# The only other valid output of EXAMPLE 2: "D C B A T"
+
+# EXAMPLE 3
+#
+#       T -      Task T depends on A, B and C individually to complete
+#      / \  \
+#     A   B  C   A depends on D, E and F. B depend on D. C depend on F.
+#    /|\ /  /
+#   | | D  /     D depends on F to complete first.
+#   |  \|/
+#   E   F        E and F depend on no tasks, and can start right away
+#
+# Note that A's dependency on F is redundant, but is listed in the input data:
+
+T:A,B,C
+B:D
+C:F
+D:F
+A:D,E,F
+E:
+F:
+
+# One valid output of EXAMPLE 3: "F C E D B A T"
+# There are multiple other results which are legal (33 in total).
+
+
+# EXAMPLE 4:
+Release:LoadTest,FunctionalTest,VirusScan
+LoadTest:Build
+FunctionalTest:Build
+VirusScan:Build
+Build:
+
+# One possible outcome for EXAMPLE 4 would be:
+# Build VirusScan LoadTest FunctionalTest Release
+
+A:B,C,D
+C:E
+E:
+
+A:B,C,D
+C:E
+E:F
+D:G
+G:
+
+A:B,C,D
+B:E
+C:E
+E:F
+D:G
+G:
+
+A:B,C,D
+B:E,H
+C:E
+E:F
+D:G
+G:
+
+# Below is an example of a cyclical dependency. Uncomment to test this.
+# A:B,C
+# B:A
+# A:
