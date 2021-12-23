@@ -75,5 +75,20 @@ B:
 # D
 ```
 
+
+3. The algorithm will output 1 of the many possible outputs. The below example has multiple potential outcomes, but the one outputted is valid.
+  
+```bash
+A:B,C,D
+B:E,H
+C:E
+E:F
+D:G
+G:
+
+# below is sent to stdout
+F G H E D C B A
+```
+
 ## TODO:
-1. Look into cyclical dependency issue
+1. Look into cyclical dependency issue [DONE]
