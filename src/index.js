@@ -92,6 +92,13 @@ const validateTask = ({ identifier, dependencies, currentLine }) => {
   validateIdentifiers([identifier, ...dependencies], currentLine);
 };
 
+/**
+ * Walks a tree depth first to find if the new dependency can be added.
+ * @param {Object} dep - incoming dependency object
+ * @param {Array} tree - The current tree that we're building
+ * @param {number} line - Current line number for error output
+ * @returns {void}
+ */
 const validateCyclicalDependencies = (dep, tree, line) => {
   let walk = [tree[0]];
   let visited = {};
@@ -116,6 +123,8 @@ const validateCyclicalDependencies = (dep, tree, line) => {
       throwCyclicalDependencyError(dep.identifier, line)
     }
 
+    // we keep track of which nodes were visited in the DFS so that we can see...
+    // if a cyclical dependency is encountered.
     visited[popped.identifier] = true;
   }
 }
@@ -151,16 +160,18 @@ const buildTree = ({
     while (walk.length) {
       const popped = walk.shift();
 
+      // spread dependencies to the end for breadth first
       if (popped?.dependencies?.length) {
         walk = [...walk, ...popped.dependencies];
       }
 
+      // if we have a matched identifier, we know we have to do some dependency additions
       if (popped.identifier === identifier) {
         // loop through the new dependencies and make sure there wont be...
         // a cyclical dependency issue with any of them.
         deps.forEach((identifier) => {
-          // check to see if we have cyclical dependencies
-          // otherwise, add our deps to the current node in the list
+          // check to see if we have cyclical dependencies.
+          // If no exit code is thrown, we add our dep to the current node in the list
           validateCyclicalDependencies(identifier, tree, currentLine)
           popped.setDependency(identifier);
         });
@@ -181,7 +192,7 @@ const createTaskTree = (lines) => {
     const currLine = lines[i];
     const currentLineIndex = i + 1;
 
-    // Don't process any line that we consider 'bad'. Aka lines that are commented out.
+    // Don't process any line that we consider 'false'. Aka lines that are commented out.
     if (checkFalsyLine(currLine)) continue;
 
     // If we get 2 dead lines in a row, we know can skip since..
@@ -207,6 +218,8 @@ const createTaskTree = (lines) => {
       currentLine: currentLineIndex,
     });
 
+    // Build our tree once validation completes.
+    // We do some validation while building the tree (cyclical dep validation for example)
     currentTaskTree = buildTree({
       identifier,
       dependencies,
@@ -224,6 +237,11 @@ const createTaskTree = (lines) => {
   return tasks;
 };
 
+/**
+ * Reads through a list of trees to output a set of directions for a task scheduler.
+ * @param {Array<Object>} tree - Array containing our tree structure.
+ * @returns {string} - Task output
+ */
 const buildOutputMessageFromTree = (tree) => {
   let walk = [tree[0]];
   let taskString = "";
@@ -257,6 +275,10 @@ const printTasks = (tasks) => {
   }
 };
 
+/**
+ * Entrypoint to the program.
+ * Reads a file, parses on newline, and builds 'task trees' based on gaps in tasks.
+ */
 const main = () => {
   const file = fs.readFileSync(path.resolve(__dirname, "..", "./input.txt"));
   const str = Buffer.from(file).toString();
