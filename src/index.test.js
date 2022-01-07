@@ -37,7 +37,7 @@ const spyProcess = () => {
   return spy
 }
 
-describe("fauna assessment", () => {
+describe("[redacted] assessment", () => {
   describe("createTaskTree", () => {
     const spy = spyConsole()
     const processSpy = spyProcess()

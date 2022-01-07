@@ -1,5 +1,5 @@
 # This file describes a programming task which we'd like you to complete
-# in the language of your choice, then send back to Fauna for evaluation.
+# in the language of your choice, then send back to [redacted] for evaluation.
 #
 # Problem: Task execution ordering. Imagine a system of related tasks where
 # some tasks depend on others to complete before they can start. Some tasks
@@ -41,7 +41,7 @@
 # Please produce code which demonstrates your best effort, complete with
 # testing, comments, and so forth.
 #
-# You have 24 hours to send your solution back to Fauna from the time you
+# You have 24 hours to send your solution back to [redacted] from the time you
 # are given the challenge.
 #
 # Good Luck!!

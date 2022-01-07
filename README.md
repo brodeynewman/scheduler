@@ -16,10 +16,10 @@ Install dependencies
 npm i
 ```
 
-The start script points to the `input.txt` file in the root of this directory. Replace this file with custom input text to run changes.
+This program expects a piped file into stdin.
 
-```
-npm start
+```bash
+cat input.txt | node src/index.js
 ```
 
 An example output might look like: `D C B A` assuming the sample input file looked like below:

@@ -1,6 +1,4 @@
-const fs = require("fs");
-const path = require("path");
-
+const readline = require('readline')
 const Task = require("./task");
 
 /**
@@ -279,11 +277,7 @@ const printTasks = (tasks) => {
  * Entrypoint to the program.
  * Reads a file, parses on newline, and builds 'task trees' based on gaps in tasks.
  */
-const main = () => {
-  const file = fs.readFileSync(path.resolve(__dirname, "..", "./input.txt"));
-  const str = Buffer.from(file).toString();
-  const lines = str.split("\n");
-
+const main = (lines) => {
   const tasks = createTaskTree(lines);
 
   printTasks(tasks);
@@ -291,8 +285,20 @@ const main = () => {
 
 // execute our script if the file is invoked via a script or through the terminal
 if (require.main === module) {
-  // start program
-  main();
+  const read = readline.createInterface({
+    input: process.stdin,
+  });
+
+  const lines = [];
+
+  read.on('line', (line) => {
+    lines.push(line);
+  });
+
+  // once input stream has closed, process the lines and build our trees
+  read.on('close', () => {
+    main(lines)
+  });
 }
 
 module.exports = {
